@@ -19,6 +19,18 @@
                 <option value="wise">知性</option>
             </select>
         </div>
+        <div class="waifu-model">
+            <label>看板娘：</label>
+            <select id="waifuModel" onchange="changeWaifuModel()">
+                <option value="miku">初音</option>
+                <option value="haru">元气</option>
+                <option value="hijiki">猫娘</option>
+            </select>
+        </div>
+        <div class="persona-extra">
+            <label>人设补充：</label>
+            <input id="personaDetail" placeholder="例如：傲娇、爱吃醋、会提醒我休息" />
+        </div>
     </header>
 
     <div id="chatbox" class="chat-box">
@@ -54,13 +66,18 @@ async function sendMessage() {
 
 async function changePersonality() {
     const sel = document.getElementById("personality").value;
+    const extra = document.getElementById("personaDetail").value.trim();
     await fetch("/set_personality", {
         method: "POST",
         headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({personality: sel})
+        body: JSON.stringify({personality: sel, persona_detail: extra})
     });
     const chatbox = document.getElementById("chatbox");
-    chatbox.innerHTML += `<div class="ai msg system">性格已切换为：${sel}</div>`;
+    let text = `性格已切换为：${sel}`;
+    if (extra) {
+        text += `（人设：${extra}）`;
+    }
+    chatbox.innerHTML += `<div class="ai msg system">${text}</div>`;
     chatbox.scrollTop = chatbox.scrollHeight;
 }
 
@@ -68,6 +85,89 @@ async function changePersonality() {
 document.getElementById("msg").addEventListener("keydown", function(e){
     if(e.key === "Enter") sendMessage();
 });
+</script>
+
+<!-- 3D 看板娘（Live2D） -->
+<script src="https://unpkg.com/live2d-widget@3.1.4/lib/L2Dwidget.min.js"></script>
+<script>
+const WAIFU_MODELS = {
+    miku: "https://unpkg.com/live2d-widget-model-miku@1.0.5/assets/miku.model.json",
+    haru: "https://unpkg.com/live2d-widget-model-haru@1.0.5/assets/haru01.model.json",
+    hijiki: "https://unpkg.com/live2d-widget-model-hijiki@1.0.5/assets/hijiki.model.json"
+};
+
+function loadWaifuModel(key) {
+    const jsonPath = WAIFU_MODELS[key] || WAIFU_MODELS.miku;
+    L2Dwidget.init({
+        model: { jsonPath: jsonPath },
+        display: {
+            position: "right",
+            width: 180,
+            height: 260,
+            hOffset: 0,
+            vOffset: -40
+        },
+        mobile: {
+            show: true,
+            scale: 0.5
+        },
+        react: {
+            opacityDefault: 0.9,
+            opacityOnHover: 1
+        }
+    });
+    // 尝试在模型加载后绑定触摸事件
+    setTimeout(bindWaifuTouch, 1000);
+}
+
+function changeWaifuModel() {
+    const sel = document.getElementById("waifuModel").value;
+    loadWaifuModel(sel);
+}
+
+function bindWaifuTouch() {
+    // live2d-widget 默认会创建一个 id 为 live2dcanvas 的 canvas
+    const canvas = document.getElementById("live2dcanvas");
+    if (!canvas) return;
+
+    const chatbox = document.getElementById("chatbox");
+    if (!chatbox) return;
+
+    async function handleTouch(event) {
+        const rect = canvas.getBoundingClientRect();
+        const clientY = event.touches ? event.touches[0].clientY : event.clientY;
+        const yRatio = (clientY - rect.top) / rect.height; // 0 顶部，1 底部
+
+        let touchDesc;
+        if (yRatio < 0.33) {
+            touchDesc = "[触摸事件] 我刚刚轻轻摸了摸你的头发，你会怎么回应？";
+        } else if (yRatio < 0.66) {
+            touchDesc = "[触摸事件] 我刚刚轻轻抱了一下你，你会怎么回应？";
+        } else {
+            touchDesc = "[触摸事件] 我刚刚有点大胆地摸了你比较敏感的地方，你会怎么回应？请用俏皮但不过分的方式表达你的反应。";
+        }
+
+        try {
+            const res = await fetch("/chat", {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({message: touchDesc})
+            });
+            const data = await res.json();
+            if (data && data.reply) {
+                chatbox.innerHTML += `<div class="ai msg">${data.reply}</div>`;
+                chatbox.scrollTop = chatbox.scrollHeight;
+            }
+        } catch (e) {
+            // 触摸触发失败时静默忽略
+        }
+    }
+
+    canvas.onclick = handleTouch;
+    canvas.ontouchstart = handleTouch;
+}
+
+loadWaifuModel("miku");
 </script>
 </body>
 </html>

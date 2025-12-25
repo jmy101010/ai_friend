@@ -19,6 +19,7 @@ chat_history = [
 
 # 用户当前性格
 current_personality = "clingy"
+current_persona_extra = ""
 
 @app.route("/")
 def index():
@@ -26,12 +27,19 @@ def index():
 
 @app.route("/set_personality", methods=["POST"])
 def set_personality():
-    global current_personality, chat_history
+    global current_personality, chat_history, current_persona_extra
     personality = request.json.get("personality")
+    persona_extra = (request.json.get("persona_detail") or "").strip()
     if personality not in PERSONALITY_MAP:
         return jsonify({"status": "error", "msg": "无效性格"})
     current_personality = personality
-    chat_history = [{"role": "system", "content": PERSONALITY_MAP[personality]}]
+    current_persona_extra = persona_extra
+    base_persona = PERSONALITY_MAP[personality]
+    if persona_extra:
+        system_content = f"{base_persona}\n补充人设：{persona_extra}"
+    else:
+        system_content = base_persona
+    chat_history = [{"role": "system", "content": system_content}]
     return jsonify({"status": "ok"})
 
 @app.route("/chat", methods=["POST"])
@@ -43,8 +51,11 @@ def chat():
     # 判断用户情绪（简单示例，可优化）
     emotion = detect_emotion(user_msg)
 
-    # 将性格 + 情绪加入 prompt
-    system_prompt = f"{PERSONALITY_MAP[current_personality]}\n用户当前心情：{emotion}"
+    # 将性格 + 自定义人设 + 情绪加入 prompt
+    system_prompt = PERSONALITY_MAP[current_personality]
+    if current_persona_extra:
+        system_prompt += f"\n补充人设：{current_persona_extra}"
+    system_prompt += f"\n用户当前心情：{emotion}"
 
     # 重新生成历史上下文
     chat_messages = [{"role": "system", "content": system_prompt}]
