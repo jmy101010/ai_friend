@@ -38,11 +38,14 @@ body {
     overflow: hidden;
 }
 
-/* 约束 Live2D 小部件在容器内铺满 */
+/* Live2D 小部件：固定在左侧，尺寸与聊天容器一致 */
 #live2d-widget {
-    width: 100% !important;
-    height: 100% !important;
-    position: relative !important;
+    width: 400px !important;
+    height: 600px !important;
+    position: fixed !important;
+    top: 50%;
+    left: calc(50% - 420px); /* 大致在左侧占位区域 */
+    transform: translateY(-50%);
 }
 
 #live2d-widget canvas,
