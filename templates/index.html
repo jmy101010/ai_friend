@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 女友陪伴系统</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<div class="chat-container">
+    <header class="chat-header">
+        <h1>💗 我的 AI 女友</h1>
+        <div class="personality">
+            <label>性格：</label>
+            <select id="personality" onchange="changePersonality()">
+                <option value="clingy">黏人</option>
+                <option value="cool">高冷</option>
+                <option value="wise">知性</option>
+            </select>
+        </div>
+    </header>
+
+    <div id="chatbox" class="chat-box">
+        <div class="ai msg">今天过得怎么样呀～</div>
+    </div>
+
+    <div class="input-area">
+        <input id="msg" placeholder="和她说点什么…" />
+        <button onclick="sendMessage()">发送</button>
+    </div>
+</div>
+
+<script>
+async function sendMessage() {
+    const input = document.getElementById("msg");
+    const text = input.value.trim();
+    if (!text) return;
+    input.value = "";
+
+    const chatbox = document.getElementById("chatbox");
+    chatbox.innerHTML += `<div class="user msg">${text}</div>`;
+    chatbox.scrollTop = chatbox.scrollHeight;
+
+    const res = await fetch("/chat", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({message: text})
+    });
+    const data = await res.json();
+    chatbox.innerHTML += `<div class="ai msg">${data.reply}</div>`;
+    chatbox.scrollTop = chatbox.scrollHeight;
+}
+
+async function changePersonality() {
+    const sel = document.getElementById("personality").value;
+    await fetch("/set_personality", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({personality: sel})
+    });
+    const chatbox = document.getElementById("chatbox");
+    chatbox.innerHTML += `<div class="ai msg system">性格已切换为：${sel}</div>`;
+    chatbox.scrollTop = chatbox.scrollHeight;
+}
+
+// 回车发送
+document.getElementById("msg").addEventListener("keydown", function(e){
+    if(e.key === "Enter") sendMessage();
+});
+</script>
+</body>
+</html>

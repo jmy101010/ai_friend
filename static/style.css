@@ -1,0 +1,127 @@
+/* 页面背景 */
+body {
+    margin: 0;
+    font-family: "Segoe UI", "PingFang SC", sans-serif;
+    background: linear-gradient(135deg, #f8cdda, #fbd786);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+/* 聊天容器 */
+.chat-container {
+    width: 400px;
+    max-width: 95%;
+    height: 600px;
+    background: #fff;
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    overflow: hidden;
+}
+
+/* Header */
+.chat-header {
+    padding: 14px 20px;
+    background: linear-gradient(90deg, #ff9a9e, #fad0c4);
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.chat-header h1 {
+    margin: 0 0 6px 0;
+    font-size: 22px;
+}
+
+.personality {
+    font-size: 14px;
+}
+
+.personality select {
+    border-radius: 12px;
+    border: none;
+    padding: 4px 8px;
+    outline: none;
+}
+
+/* 聊天内容 */
+.chat-box {
+    flex: 1;
+    padding: 12px;
+    background: #fff0f5;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+/* 消息气泡 */
+.msg {
+    padding: 10px 14px;
+    border-radius: 16px;
+    margin: 6px 0;
+    max-width: 75%;
+    word-wrap: break-word;
+    line-height: 1.4;
+    animation: fadeIn 0.3s ease;
+}
+
+/* AI 消息 */
+.ai {
+    background: #ffe4ec;
+    align-self: flex-start;
+    color: #333;
+}
+
+/* 系统消息（性格切换提示） */
+.system {
+    background: #fff7e6;
+    font-style: italic;
+}
+
+/* 用户消息 */
+.user {
+    background: #6c9eff;
+    color: #fff;
+    align-self: flex-end;
+}
+
+/* 输入区域 */
+.input-area {
+    display: flex;
+    padding: 12px;
+    border-top: 1px solid #eee;
+    background: #fafafa;
+}
+
+input#msg {
+    flex: 1;
+    padding: 8px 12px;
+    border-radius: 20px;
+    border: 1px solid #ccc;
+    outline: none;
+}
+
+button {
+    margin-left: 8px;
+    padding: 8px 16px;
+    border-radius: 20px;
+    border: none;
+    background-color: #ff6b81;
+    color: #fff;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+button:hover {
+    background-color: #ff4c61;
+}
+
+/* 消息淡入动画 */
+@keyframes fadeIn {
+    from {opacity: 0; transform: translateY(10px);}
+    to {opacity: 1; transform: translateY(0);}
+}
