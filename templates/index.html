@@ -8,38 +8,44 @@
 </head>
 <body>
 
-<div class="chat-container">
-    <header class="chat-header">
-        <h1>💗 我的 AI 女友</h1>
-        <div class="personality">
-            <label>性格：</label>
-            <select id="personality" onchange="changePersonality()">
-                <option value="clingy">黏人</option>
-                <option value="cool">高冷</option>
-                <option value="wise">知性</option>
-            </select>
-        </div>
-        <div class="waifu-model">
-            <label>看板娘：</label>
-            <select id="waifuModel" onchange="changeWaifuModel()">
-                <option value="miku">初音</option>
-                <option value="haru">元气</option>
-                <option value="hijiki">猫娘</option>
-            </select>
-        </div>
-        <div class="persona-extra">
-            <label>人设补充：</label>
-            <input id="personaDetail" placeholder="例如：傲娇、爱吃醋、会提醒我休息" />
-        </div>
-    </header>
-
-    <div id="chatbox" class="chat-box">
-        <div class="ai msg">今天过得怎么样呀～</div>
+<div class="main-layout">
+    <div class="waifu-container">
+        <div id="live2d-widget"></div>
     </div>
 
-    <div class="input-area">
-        <input id="msg" placeholder="和她说点什么…" />
-        <button onclick="sendMessage()">发送</button>
+    <div class="chat-container">
+        <header class="chat-header">
+            <h1>💗 我的 AI 女友</h1>
+            <div class="personality">
+                <label>性格：</label>
+                <select id="personality" onchange="changePersonality()">
+                    <option value="clingy">黏人</option>
+                    <option value="cool">高冷</option>
+                    <option value="wise">知性</option>
+                </select>
+            </div>
+            <div class="waifu-model">
+                <label>看板娘：</label>
+                <select id="waifuModel" onchange="changeWaifuModel()">
+                    <option value="miku">初音</option>
+                    <option value="haru">元气</option>
+                    <option value="hijiki">猫娘</option>
+                </select>
+            </div>
+            <div class="persona-extra">
+                <label>人设补充：</label>
+                <input id="personaDetail" placeholder="例如：傲娇、爱吃醋、会提醒我休息" />
+            </div>
+        </header>
+
+        <div id="chatbox" class="chat-box">
+            <div class="ai msg">今天过得怎么样呀～</div>
+        </div>
+
+        <div class="input-area">
+            <input id="msg" placeholder="和她说点什么…" />
+            <button onclick="sendMessage()">发送</button>
+        </div>
     </div>
 </div>
 
@@ -101,11 +107,11 @@ function loadWaifuModel(key) {
     L2Dwidget.init({
         model: { jsonPath: jsonPath },
         display: {
-            position: "right",
-            width: 180,
-            height: 260,
+            position: "left",
+            width: 400,
+            height: 600,
             hOffset: 0,
-            vOffset: -40
+            vOffset: 0
         },
         mobile: {
             show: true,
@@ -117,7 +123,9 @@ function loadWaifuModel(key) {
         }
     });
     // 尝试在模型加载后绑定触摸事件
-    setTimeout(bindWaifuTouch, 1000);
+    setTimeout(function() {
+        bindWaifuTouch();
+    }, 1000);
 }
 
 function changeWaifuModel() {

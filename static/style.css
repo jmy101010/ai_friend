@@ -9,6 +9,22 @@ body {
     height: 100vh;
 }
 
+/* 左右布局：左侧看板娘，右侧聊天 */
+.main-layout {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 40px;
+}
+
+/* 看板娘容器，尺寸与聊天容器一致 */
+.waifu-container {
+    width: 400px;
+    max-width: 95%;
+    height: 600px;
+    position: relative;
+}
+
 /* 聊天容器 */
 .chat-container {
     width: 400px;
@@ -20,6 +36,19 @@ body {
     flex-direction: column;
     box-shadow: 0 10px 30px rgba(0,0,0,0.2);
     overflow: hidden;
+}
+
+/* 约束 Live2D 小部件在容器内铺满 */
+#live2d-widget {
+    width: 100% !important;
+    height: 100% !important;
+    position: relative !important;
+}
+
+#live2d-widget canvas,
+#live2dcanvas {
+    width: 100% !important;
+    height: 100% !important;
 }
 
 /* Header */
